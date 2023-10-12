@@ -15,26 +15,38 @@ public class ProductService : IProductService
         _dbContext = dbContext;
     }
 
-    public ProductResponse CreateProduct(Product product)
+    public void CreateProduct(Product product)
     {
         // Add the product to the context
         _dbContext.Set<Product>().Add(product);
         
         // Save changes in database
         _dbContext.SaveChanges();
-    
-        var response = new ProductResponse(
-            product.Id,
-            product.Name,
-            product.Description,
-            product.Manufacturer,
-            product.Sku,
-            product.Price,
-            product.QuantityInStock,
-            product.Category,
-            product.ModifiedAt
-        );
-        
-        return response;
+    }
+
+    public Product? GetProduct(Guid guid)
+    {
+        var product = _dbContext.Set<Product>().FirstOrDefault(p => p.Id == guid);
+
+        return product;
+    }
+
+    public Product UpdateProduct(Guid guid, Product request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool DeleteProduct(Guid guid)
+    {
+        var productToDelete = _dbContext.Set<Product>().FirstOrDefault(p => p.Id == guid);
+        if (productToDelete == null)
+        {
+            return false;
+        }
+
+        _dbContext.Set<Product>().Remove(productToDelete);
+        _dbContext.SaveChanges();
+
+        return true;
     }
 }

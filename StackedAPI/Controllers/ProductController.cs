@@ -17,6 +17,8 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult CreateProduct(CreateProductRequest request)
     {
         var product = new Product
@@ -55,9 +57,30 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetProducts(Guid id)
     {
-        return Ok(id);
+        Product? product = _productService.GetProduct(id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        var response = new ProductResponse(
+            product.Id,
+            product.Name,
+            product.Description,
+            product.Manufacturer,
+            product.Sku,
+            product.Price,
+            product.QuantityInStock,
+            product.Category,
+            product.ModifiedAt
+            );
+        
+        return Ok(response);
     }
 
     [HttpPut("{id:guid}")]
@@ -67,9 +90,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult DeleteProduct(Guid id)
     {
-        return Ok();
+        var response = _productService.DeleteProduct(id);
+        return Ok(response);
     }
     
 }

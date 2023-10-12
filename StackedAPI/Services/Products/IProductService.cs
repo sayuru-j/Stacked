@@ -5,5 +5,8 @@ namespace StackedAPI.Services.Products;
 
 public interface IProductService
 {
-    public ProductResponse CreateProduct(Product product);
+    public void CreateProduct(Product product);
+    public Product? GetProduct(Guid guid);
+    public Product UpdateProduct(Guid guid, Product request);
+    public bool DeleteProduct(Guid guid);
 }
