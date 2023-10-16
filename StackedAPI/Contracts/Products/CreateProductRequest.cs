@@ -4,8 +4,8 @@ public record CreateProductRequest(
     string Name,
     string Description,
     string Manufacturer,
-    string Sku,
+    string SKU,
     decimal Price,
     int QuantityInStock,
-    int Category
+    int CategoryId
     );

@@ -31,9 +31,33 @@ public class ProductService : IProductService
         return product;
     }
 
-    public Product UpdateProduct(Guid guid, Product request)
+    public IEnumerable<Product> GetProductList()
     {
-        throw new NotImplementedException();
+        var productsList = _dbContext.Set<Product>().ToList();
+
+        return productsList;
+    }
+
+    public void UpdateProduct(Guid guid, Product request)
+    {
+        var existingProduct = _dbContext.Set<Product>().Find(guid);
+
+        if (existingProduct == null)
+        {
+            throw new Exception("Product not found");
+        }
+
+        _dbContext.Set<Product>().Update(request);
+        
+        try
+        {
+            _dbContext.SaveChanges();
+        }
+        catch (DbUpdateException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public bool DeleteProduct(Guid guid)

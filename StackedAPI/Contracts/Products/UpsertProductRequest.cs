@@ -4,8 +4,8 @@ public record UpsertProductRequest(
     string Name,
     string Description,
     string Manufacturer,
-    string Sku,
+    string SKU,
     decimal Price,
     int QuantityInStock,
-    string Category
+    int CategoryId
     );

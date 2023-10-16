@@ -16,13 +16,13 @@ namespace StackedAPI.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Manufacturer = table.Column<string>(type: "text", nullable: false),
-                    Sku = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Manufacturer = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SKU = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     QuantityInStock = table.Column<int>(type: "integer", nullable: false),
-                    Category = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

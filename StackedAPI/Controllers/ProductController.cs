@@ -19,6 +19,7 @@ public class ProductController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public IActionResult CreateProduct(CreateProductRequest request)
     {
         var product = new Product
@@ -27,10 +28,10 @@ public class ProductController : ControllerBase
             Name = request.Name,
             Description = request.Description,
             Manufacturer = request.Manufacturer,
-            Sku = request.Sku,
+            SKU = request.SKU,
             Price = request.Price,
             QuantityInStock = request.QuantityInStock,
-            Category = request.Category,
+            CategoryId = request.CategoryId,
             CreatedAt = DateTime.UtcNow,
             ModifiedAt = DateTime.UtcNow
         };
@@ -42,10 +43,10 @@ public class ProductController : ControllerBase
             product.Name,
             product.Description,
             product.Manufacturer,
-            product.Sku,
+            product.SKU,
             product.Price,
             product.QuantityInStock,
-            product.Category,
+            product.CategoryId,
             product.ModifiedAt
         );
         
@@ -56,12 +57,29 @@ public class ProductController : ControllerBase
             );
     }
 
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public IActionResult GetProductList()
+    {
+        var products = _productService.GetProductList();
+
+        var productList = products as Product[] ?? products.ToArray();
+        
+        if (!productList.Any())
+        {
+            return NoContent();
+        }
+
+        return Ok(new { Products = productList,  TotalCount = productList.Length});
+    }
+
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetProducts(Guid id)
     {
-        Product? product = _productService.GetProduct(id);
+        var product = _productService.GetProduct(id);
 
         if (product == null)
         {
@@ -73,10 +91,10 @@ public class ProductController : ControllerBase
             product.Name,
             product.Description,
             product.Manufacturer,
-            product.Sku,
+            product.SKU,
             product.Price,
             product.QuantityInStock,
-            product.Category,
+            product.CategoryId,
             product.ModifiedAt
             );
         
@@ -84,17 +102,41 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult UpdateProduct(Guid id, UpsertProductRequest request)
     {
-        return Ok(request);
+        var existingProduct = _productService.GetProduct(id);
+        if (existingProduct == null)
+        {
+            return NotFound();
+        }
+
+        existingProduct.Name = request.Name;
+        existingProduct.Description = request.Description;
+        existingProduct.Manufacturer = request.Manufacturer;
+        existingProduct.SKU = request.SKU;
+        existingProduct.Price = request.Price;
+        existingProduct.QuantityInStock = request.QuantityInStock;
+        existingProduct.CategoryId = request.CategoryId;
+        
+        _productService.UpdateProduct(id, existingProduct);
+        
+        return Ok();
     }
 
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult DeleteProduct(Guid id)
     {
-        var response = _productService.DeleteProduct(id);
-        return Ok(response);
+        var isDeleted = _productService.DeleteProduct(id);
+        if (isDeleted == false)
+        {
+            return NotFound();
+        }
+
+        return Ok();
     }
     
 }
